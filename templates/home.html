@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    
+<h1>{{ message }}</h1>
+
+<h2>Name a city you want forecast for:</h2>
+    <ul>
+        {{ weather }}
+
+        <form action="/submit" method="POST">
+        <label for="weather">City name:</label>
+        <input type="text" id="weather" name="city_name">
+        <button type="submit">Submit</button>
+        </form>
+        
+        {% block title %}Home Page{% endblock %}
+    </ul>
+
+{% endblock %}

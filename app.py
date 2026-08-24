@@ -1,24 +1,10 @@
 import requests, json
+from flask import Flask, render_template
+from flask import request, redirect, url_for
 
-CACHE_FILEPATH = "cache.json"
+app = Flask(__name__)
 
-#-------------------CACHE FUNKCIJE--------------------------
-
-def save_to_cache(coords: tuple[float, float], data: dict):
-
-    cache = data.update(coords)
-
-    with open(CACHE_FILEPATH, "w") as f:
-        json.dump(data, f)
-
-
-def get_from_cache(coords: tuple[float, float]):
-
-    with open(CACHE_FILEPATH, "r") as f:
-        deserialized = json.load(f)
-        return deserialized
-
-#-----------------GEOLOKACIJA I PROGNOZA---------------------
+global_weather = None
 
 def geolocation(city_name:str) -> tuple[float, float] | None:
     url = "https://geocoding-api.open-meteo.com/v1/search"
@@ -70,11 +56,6 @@ def get_weather(coords:tuple[float, float]) -> dict | None:
 
     return result
 
-
-city_name = input("Enter city name: ")
-coords = geolocation(city_name)
-weather_data = get_weather(coords)
-
 weather_code_map = {
     0: "sunny",
     1: "mainly clear",
@@ -106,7 +87,18 @@ weather_code_map = {
     99: "thunderstorm(heavy)"
 }
 
-weather_code = weather_data["weather"]
-weather = weather_code_map[weather_code]
+@app.route("/")
+def home():
+    return render_template("home.html", message="Hello, Forecast user!", weather=global_weather)
 
-print("\nCurrent temperature is:", weather_data["temperature"], "°C", "\nPressure is:", weather_data["pressure"], "mBa", "\nWeather is:", weather)
+@app.route("/submit", methods=["POST"])
+def submit():
+    global global_weather
+    city_name = request.form.get("city_name")
+    if city_name:
+        coords = geolocation(city_name)
+        weather_data = get_weather(coords)
+        weather_code = weather_data["weather"]
+        weather = weather_code_map[weather_code]
+        global_weather = weather
+    return redirect(url_for("home"))
