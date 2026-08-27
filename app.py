@@ -89,7 +89,7 @@ weather_code_map = {
 
 @app.route("/")
 def home():
-    return render_template("home.html", message="Hello, Forecast user!", weather=global_weather)
+    return render_template("home.html", message="Welcome to the forecast app!", weather=global_weather)
 
 @app.route("/submit", methods=["POST"])
 def submit():
@@ -102,3 +102,6 @@ def submit():
         weather = weather_code_map[weather_code]
         global_weather = weather
     return redirect(url_for("home"))
+
+if __name__ == "__main__":
+    app.run(debug=True)

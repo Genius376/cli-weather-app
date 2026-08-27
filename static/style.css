@@ -1,4 +1,8 @@
-#welcome {
+h2 {
     color: blueviolet;
+    text-align: center;
+}
+
+ul {
     text-align: center;
 }
